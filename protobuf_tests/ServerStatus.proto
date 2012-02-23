@@ -1,0 +1,11 @@
+package sample.proto;
+
+
+message ServerStatusQuery {
+}
+
+
+message ServerStatusAnswer {
+	optional int32 threadCount = 1;
+	repeated string listeners = 2;
+}

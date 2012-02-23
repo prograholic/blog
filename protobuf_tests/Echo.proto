@@ -1,0 +1,11 @@
+package sample.proto;
+
+
+
+message EchoQuery {
+	required string msg = 1;
+}
+
+message EchoAnswer {
+	required string echo = 1;
+}

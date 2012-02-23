@@ -1,0 +1,8 @@
+package sample.proto;
+
+message Message {
+	required string id = 1;
+
+	// @note this data is another message, unpacking of this message performed by childs of MessageProcessorBase
+	optional bytes data = 2;
+}
