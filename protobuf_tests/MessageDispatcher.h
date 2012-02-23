@@ -11,6 +11,17 @@
 
 
 
+class MessageProcessingError: public std::runtime_error
+{
+public:
+
+	MessageProcessingError(const std::string & e): std::runtime_error(e)
+	{
+
+	}
+
+};
+
 
 class MessageProcessorBase: private boost::noncopyable
 {
@@ -28,20 +39,6 @@ public:
 private:
 
 };
-
-
-
-class MessageProcessingError: public std::runtime_error
-{
-public:
-
-	MessageProcessingError(const std::string & e): std::runtime_error(e)
-	{
-
-	}
-
-};
-
 
 
 template <typename ProtoQueryT, typename ProtoAnswerT>

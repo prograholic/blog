@@ -7,9 +7,13 @@
 
 
 class ServerStatusMessageProcessor:
-		public ProtoMessageProcessor<sample::proto::ServerStatusQuery, sample::proto::ServerStatusAnswer>
+		public ProtoMessageProcessor<sample::proto::ServerStatusQuery,
+			sample::proto::ServerStatusAnswer>
 {
 public:
+
+	typedef sample::proto::ServerStatusQuery query_type;
+	typedef sample::proto::ServerStatusAnswer answer_type;
 
 	ServerStatusMessageProcessor(MessageDispatcher * dispatcher);
 
@@ -18,7 +22,7 @@ public:
 
 private:
 
-	virtual sample::proto::ServerStatusAnswer doProcessing(const sample::proto::ServerStatusQuery & query);
+	virtual answer_type doProcessing(const query_type & query);
 
 
 	MessageDispatcher * mDispatcher;
