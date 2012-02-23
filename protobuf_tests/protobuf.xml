@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="Google protocol buffers" version="1.0" kateversion="2.4" section="Sources" extensions="*.proto;" mimetype="" author="Alexey Kutumov" license="LGPL">
+  <highlighting>
+
+    <list name="keywords">
+      <item> import </item>
+      
+      <item> package </item>
+      
+      <item> message </item>
+      <item> enum </item>
+      
+      <item> required </item>
+      <item> optional </item>
+      <item> repeated </item>
+      
+      <item> default </item>
+      
+      
+    </list>
+
+    <list name="builtin_types">
+      <item> double </item>
+      <item> float </item>
+      <item> int32 </item>
+      <item> int64 </item>
+      <item> uint32 </item>
+      <item> uint64 </item>
+      <item> sint32 </item>
+      <item> sint64 </item>
+      <item> fixed32 </item>
+      <item> fixed64 </item>
+      <item> sfixed32 </item>
+      <item> sfixed64 </item>
+      <item> bool </item>
+      <item> string </item>
+      <item> bytes </item>
+    </list>
+
+    <contexts>
+      <context attribute="Normal Text" lineEndContext="#pop" name="Normal Text" >
+        <keyword attribute="Keyword" context="#stay" String="keywords" />
+        <keyword attribute="BuiltinTypes" context="#stay" String="builtin_types" />
+        <DetectChar attribute="String" context="string" char="&quot;" />
+        <RegExpr attribute="Comment" context="#stay" String="//.*$"/>
+        <Int attribute="Decimal" context="#stay" />
+        <Float attribute="Float" context="#stay">
+          <AnyChar String="fF" attribute="Float" context="#stay"/>
+        </Float>
+      </context>
+      
+      <context attribute="String" lineEndContext="#stay" name="string" >
+        <DetectChar attribute="String" context="#pop" char="&quot;" />
+      </context>
+      
+      <context attribute="Comment" lineEndContext="#pop" name="Comment">
+        <IncludeRules context="##Alert" />
+      </context>
+      
+    </contexts>
+    
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal" />
+      <itemData name="Keyword" defStyleNum="dsKeyword" />
+      <itemData name="BuiltinTypes" defStyleNum="dsKeyword" />
+      <itemData name="Decimal" defStyleNum="dsDecVal"/>
+      <itemData name="Float" defStyleNum="dsFloat"/>
+      <itemData name="String" defStyleNum="dsString" />
+      <itemData name="Comment" defStyleNum="dsComment"/>
+    </itemDatas>
+  </highlighting>
+
+  <general>
+    <comments>
+      <comment name="singleLine" start="//"/>
+    </comments>
+    <keywords casesensitive="1"/>
+  </general>
+</language>

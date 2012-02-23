@@ -1,0 +1,5 @@
+package sample.proto;
+
+message Message {
+	required string id = 1;
+}
