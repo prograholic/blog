@@ -75,3 +75,42 @@ BOOST_AUTO_TEST_CASE(return_valid_pos_for_element)
 
 
 BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(find_if)
+
+template <bool x>
+struct always_
+{
+	template <typename ValueT>
+	bool operator ()(const ValueT & )
+	{
+		return x;
+	}
+};
+
+
+BOOST_AUTO_TEST_CASE(return_end_if_not_found)
+{
+	int buff[] = {0, 1, 2, 3, 4};
+	int * first = buff;
+	int * last = buff + 5;
+
+	int * pos = my_stl::find_if(first, last, always_<false>());
+
+	BOOST_CHECK_EQUAL(last, pos);
+}
+
+
+BOOST_AUTO_TEST_CASE(return_first_if_found)
+{
+	int buff[] = {0, 1, 2, 3, 4};
+	int * first = buff;
+	int * last = buff + 5;
+
+	int * pos = my_stl::find_if(first, last, always_<true>());
+
+	BOOST_CHECK_EQUAL(first, pos);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
