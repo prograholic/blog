@@ -1,0 +1,5 @@
+#ifndef DATA_IO_INSERTER_H
+#define DATA_IO_INSERTER_H
+
+
+#endif /* DATA_IO_INSERTER_H */
