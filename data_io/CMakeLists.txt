@@ -8,11 +8,13 @@ find_package(Boost COMPONENTS unit_test_framework)
 set (DataIoSources
 	data_io.cpp
 	data_io_common.h
+	data_io_endian.h
+	data_io_inserter.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(data_io ${MyStlSources})
+add_library(data_io ${DataIoSources})
 
 if(Boost_FOUND)
 

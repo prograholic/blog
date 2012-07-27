@@ -1,4 +1,4 @@
-project (my_stl_tests)
+project (data_io_tests)
 
 macro(ADD_BOOST_TEST name )
 	add_executable(${name} ${ARGV})
@@ -8,10 +8,9 @@ endmacro()
 
 
 
-set(AlgorithmTests
-	algorithm_tests.cpp
+set(DataIoTestsSources
+	data_io_tests.cpp
 )
 
-remove_definitions(-nostdinc)
 
-ADD_BOOST_TEST(algorithm_tests ${AlgorithmTests})
+ADD_BOOST_TEST(data_io_tests ${DataIoTestsSources})

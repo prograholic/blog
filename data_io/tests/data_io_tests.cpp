@@ -1,116 +1,57 @@
-#define BOOST_TEST_MODULE algorithm
+#define BOOST_TEST_MODULE data_io
 
 #include <boost/test/included/unit_test.hpp>
 
 
-#include "algorithm.h"
+#include "data_io_endian.h"
 
 
-BOOST_AUTO_TEST_SUITE(for_each)
+BOOST_AUTO_TEST_SUITE(endian)
 
-struct run_counter
+BOOST_AUTO_TEST_CASE(test_little_endian_to_int)
 {
-	run_counter(): mRunCounter(0)
-	{
-	}
+	char buff[] = {0x00, 0x40};
 
-	template <typename ValueT>
-	void operator () (const ValueT & val)
-	{
-		++mRunCounter;
-	}
+	BOOST_CHECK_EQUAL(0x4000, dio::endian::le_mem_2_type<dio::uint16_t>(buff));
 
-	int mRunCounter;
-};
-
-
-BOOST_AUTO_TEST_CASE(empty_container)
-{
-	int buff[] = {0, 1, 2, 3, 4};
-	run_counter rc;
-	my_stl::for_each(buff, buff, rc);
-
-	BOOST_CHECK_EQUAL(0, rc.mRunCounter);
-}
-
-BOOST_AUTO_TEST_CASE(container_with_5_elements)
-{
-	int buff[] = {0, 1, 2, 3, 4};
-	run_counter rc;
-	rc = my_stl::for_each(buff, buff + 5, rc);
-
-	BOOST_CHECK_EQUAL(5, rc.mRunCounter);
 }
 
 
-BOOST_AUTO_TEST_SUITE_END()
-
-
-
-BOOST_AUTO_TEST_SUITE(find)
-
-BOOST_AUTO_TEST_CASE(return_end_if_not_found)
+BOOST_AUTO_TEST_CASE(test_big_endian_to_int)
 {
-	int buff[] = {0, 1, 2, 3, 4};
-	int * first = buff;
-	int * last = buff + 5;
+	char buff[] = {0x12, 0x34, 0x56, 0x78};
 
-	int * pos = my_stl::find(first, last, 6);
+	BOOST_CHECK_EQUAL(0x12345678, dio::endian::be_mem_2_type<dio::uint32_t>(buff));
 
-	BOOST_CHECK_EQUAL(pos, last);
 }
 
 
-BOOST_AUTO_TEST_CASE(return_valid_pos_for_element)
+BOOST_AUTO_TEST_CASE(test_little_endian_from_int)
 {
-	int buff[] = {0, 1, 2, 3, 4};
-	int * first = buff;
-	int * last = buff + 5;
+	char etalon[] = {0x78, 0x56, 0x34, 0x12};
+	dio::uint32_t x = 0x12345678;
 
-	int * pos = my_stl::find(first, last, 3);
+	char tmp[sizeof(x)];
 
-	BOOST_CHECK_EQUAL(pos, first + 3);
-	BOOST_CHECK_EQUAL(3, *pos);
+	dio::endian::le_type_2_mem(x, tmp);
+
+
+	BOOST_CHECK_EQUAL_COLLECTIONS(tmp, tmp + sizeof(x), etalon, etalon + sizeof(x));
 }
 
 
-BOOST_AUTO_TEST_SUITE_END()
-
-
-BOOST_AUTO_TEST_SUITE(find_if)
-
-template <bool x>
-struct always_
+BOOST_AUTO_TEST_CASE(test_big_endian_from_int)
 {
-	template <typename ValueT>
-	bool operator ()(const ValueT & )
-	{
-		return x;
-	}
-};
+	char etalon[] = {0x12, 0x34, 0x56, 0x78};
+	dio::uint32_t x = 0x12345678;
+
+	char tmp[sizeof(x)];
+
+	dio::endian::be_type_2_mem(x, tmp);
 
 
-BOOST_AUTO_TEST_CASE(return_end_if_not_found)
-{
-	int buff[] = {0, 1, 2, 3, 4};
-	int * first = buff;
-	int * last = buff + 5;
+	BOOST_CHECK_EQUAL_COLLECTIONS(tmp, tmp + sizeof(x), etalon, etalon + sizeof(x));
 
-	int * pos = my_stl::find_if(first, last, always_<false>());
-
-	BOOST_CHECK_EQUAL(last, pos);
-}
-
-
-BOOST_AUTO_TEST_CASE(return_first_if_found)
-{
-	int buff[] = {0, 1, 2, 3, 4};
-	int * first = buff;
-	int * last = buff + 5;
-
-	int * pos = my_stl::find_if(first, last, always_<true>());
-
-	BOOST_CHECK_EQUAL(first, pos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
