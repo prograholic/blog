@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_little_endian_inserter)
 {
 	data_t x;
 
-	x << insert(le, 0x12345678);
+	x << as(le, 0x12345678);
 
 	BOOST_CHECK_EQUAL(0x78, x[0]);
 	BOOST_CHECK_EQUAL(0x56, x[1]);

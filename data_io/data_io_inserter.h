@@ -31,13 +31,13 @@ namespace dio
 
 
 	template <typename IntT>
-	detail::number_inserter<le_tag, IntT> insert(le_tag, IntT x)
+	detail::number_inserter<le_tag, IntT> as(le_tag, IntT x)
 	{
 		return detail::number_inserter<le_tag, IntT>(x);
 	}
 
 	template <typename IntT>
-	detail::number_inserter<be_tag, IntT> insert(be_tag, IntT x)
+	detail::number_inserter<be_tag, IntT> as(be_tag, IntT x)
 	{
 		return detail::number_inserter<be_tag, IntT>(x);
 	}
