@@ -7,10 +7,13 @@ find_package(Boost COMPONENTS unit_test_framework)
 
 set (DataIoSources
 	data_io.cpp
+
 	data_io_common.h
-	data_io_endian.h
-	data_io_inserter.h
 	data_io_slice.h
+	data_io_endian.h
+
+	data_io_inserter.h
+	data_io_extractor.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

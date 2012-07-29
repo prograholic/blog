@@ -1,6 +1,10 @@
 #ifndef DATA_IO_ENDIAN_H
 #define DATA_IO_ENDIAN_H
 
+#include <boost/type_traits/make_unsigned.hpp>
+#include <boost/type_traits/make_signed.hpp>
+
+
 #include "data_io_common.h"
 
 namespace dio
@@ -10,18 +14,18 @@ namespace dio
 		template <typename IntT, typename InputIteratorT>
 		IntT le_mem_2_type(InputIteratorT input)
 		{
-			typename make_unsigned<IntT>::type val = 0;
+			typedef typename boost::make_unsigned<IntT>::type unsigned_t;
+			unsigned_t val = 0;
 
-			size_t count = sizeof(val);
+			size_t count = 0;
 
-			while (count > 0)
+			while (count < sizeof(val))
 			{
-				val |= static_cast<uint8_t>(*input);
-
-				val <<= CHAR_BIT;
+				unsigned_t byteElem = static_cast<uint8_t>(*input);
+				val |= (byteElem << (CHAR_BIT * count));
 
 				++input;
-				--count;
+				++count;
 			}
 
 			return val;
@@ -30,7 +34,7 @@ namespace dio
 		template <typename IntT, typename InputIteratorT>
 		IntT be_mem_2_type(InputIteratorT input)
 		{
-			typedef typename make_unsigned<IntT>::type unsigned_t;
+			typedef typename boost::make_unsigned<IntT>::type unsigned_t;
 			unsigned_t val = 0;
 
 			size_t count = sizeof(val);
@@ -38,7 +42,7 @@ namespace dio
 			while (count > 0)
 			{
 				unsigned_t byteElem = static_cast<uint8_t>(*input);
-				val |= (byteElem << CHAR_BIT * (count - 1));
+				val |= (byteElem << (CHAR_BIT * (count - 1)));
 
 				++input;
 				--count;
@@ -73,7 +77,7 @@ namespace dio
 		OutputIteratorT le_type_2_mem(IntT val, OutputIteratorT begin)
 		{
 			OutputIteratorT ptr = begin;
-			typedef typename make_unsigned<IntT>::type unsigned_t;
+			typedef typename boost::make_unsigned<IntT>::type unsigned_t;
 
 			unsigned_t uval = val;
 
@@ -96,7 +100,7 @@ namespace dio
 		OutputIteratorT be_type_2_mem(IntT val, OutputIteratorT begin)
 		{
 			OutputIteratorT ptr = begin;
-			typedef typename make_unsigned<IntT>::type unsigned_t;
+			typedef typename boost::make_unsigned<IntT>::type unsigned_t;
 
 			unsigned_t uval = val;
 

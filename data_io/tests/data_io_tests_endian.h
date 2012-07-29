@@ -12,9 +12,9 @@ using namespace dio::endian;
 
 BOOST_AUTO_TEST_CASE(test_little_endian_to_int)
 {
-	char buff[] = {0x00, 0x40};
+	char buff[] = {0x12, 0x34, 0x56, 0x78};
 
-	BOOST_CHECK_EQUAL(0x4000, le_mem_2_type<dio::uint16_t>(buff));
+	BOOST_CHECK_EQUAL(0x78563412, le_mem_2_type<dio::uint32_t>(buff));
 
 }
 

@@ -31,22 +31,6 @@ namespace dio
 		};
 	}
 
-	enum le_tag
-	{
-		le
-	};
-
-	enum be_tag
-	{
-		be
-	};
-
-	enum native_tag
-	{
-		native
-	};
-
-
 	template <typename IntT>
 	detail::number_inserter<le_tag, IntT> as(le_tag, IntT x)
 	{
