@@ -18,6 +18,17 @@ namespace dio
 			{}
 
 		};
+
+
+		template <typename InputIteratorT>
+		struct range_inserter
+		{
+			InputIteratorT first;
+			InputIteratorT last;
+
+			range_inserter(InputIteratorT f, InputIteratorT l): first(f), last(l)
+			{}
+		};
 	}
 
 	enum le_tag
@@ -54,6 +65,26 @@ namespace dio
 		return detail::number_inserter<native_tag, IntT>(x);
 	}
 
+	template <typename InputIteratorT>
+	detail::range_inserter<InputIteratorT> range(InputIteratorT first, InputIteratorT last)
+	{
+		return detail::range_inserter<InputIteratorT>(first, last);
+	}
+
+
+
+	data_t & operator << (data_t & data, uint8_t x)
+	{
+		data.push_back(x);
+
+		return data;
+	}
+
+	data_t & operator << (data_t & data, const data_t & x)
+	{
+		data.insert(data.end(), x.begin(), x.end());
+	}
+
 
 	template <typename TypeT>
 	data_t & operator << (data_t & data, const detail::number_inserter<le_tag, TypeT> & inserter)
@@ -79,30 +110,21 @@ namespace dio
 		return data;
 	}
 
-
-	data_t & operator << (data_t & data, uint8_t x)
-	{
-		data.push_back(x);
-
-		return data;
-	}
-
-
-	data_t & operator << (data_t & data, const data_t & x)
-	{
-		data.insert(data.end(), x.begin(), x.end());
-	}
-
-
 	template <typename ContainerT, typename SliceAdapterT>
-	data_t & operator << (data_t & data, const out_slice<ContainerT, SliceAdapterT> & s)
+	data_t & operator << (data_t & data, const slice_container<ContainerT, SliceAdapterT> & s)
 	{
 		data.insert(data.end(), s.begin(), s.end());
 
 		return data;
 	}
 
+	template <typename InputIteratorT>
+	data_t & operator << (data_t & data, const detail::range_inserter<InputIteratorT> & r)
+	{
+		data.insert(data.end(), r.first, r.last);
 
+		return data;
+	}
 
 }
 

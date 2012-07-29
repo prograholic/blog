@@ -50,11 +50,11 @@ namespace dio
 
 
 	template <typename ContainerT, typename SliceAdapterT = simple_data_adapter>
-	class out_slice
+	class slice_container
 	{
 	public:
 
-		out_slice(const ContainerT & data, size_t start, size_t count)
+		slice_container(const ContainerT & data, size_t start, size_t count)
 			: mData(&data), mStart(start), mCount(count)
 		{
 			BOOST_ASSERT((start + count) >= start); /// prevent wrap around
@@ -126,15 +126,15 @@ namespace dio
 
 
 	template <typename ContainerT>
-	out_slice<ContainerT> make_out_slice(ContainerT & container, size_t start, size_t count)
+	slice_container<ContainerT> slice(ContainerT & container, size_t start, size_t count)
 	{
-		return out_slice<ContainerT>(container, start, count);
+		return slice_container<ContainerT>(container, start, count);
 	}
 
 	template <typename SliceAdapterT, typename ContainerT>
-	out_slice<ContainerT, SliceAdapterT> make_out_slice(ContainerT & container, size_t start, size_t count)
+	slice_container<ContainerT, SliceAdapterT> slice(ContainerT & container, size_t start, size_t count)
 	{
-		return out_slice<ContainerT, SliceAdapterT>(container, start, count);
+		return slice_container<ContainerT, SliceAdapterT>(container, start, count);
 	}
 
 }

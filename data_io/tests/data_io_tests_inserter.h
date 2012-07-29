@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(test_slice_inserter)
 	data_t y;
 	y << 0x12 << 0x34 << 0x56 << 0x78;
 
-	x << make_out_slice(y, 1, 3);
+	x << slice(y, 1, 3);
 
 	BOOST_REQUIRE_EQUAL(3, x.size());
 
@@ -101,7 +101,24 @@ BOOST_AUTO_TEST_CASE(test_slice_inserter_with_custom_adapter)
 	data_t y;
 	y << 0x12 << 0x34 << 0x56 << 0x78;
 
-	x << make_out_slice<fit_to_data_adapter>(y, 1, 100);
+	x << slice<fit_to_data_adapter>(y, 1, 100);
+
+	BOOST_REQUIRE_EQUAL(3, x.size());
+
+	BOOST_CHECK_EQUAL(0x34, x[0]);
+	BOOST_CHECK_EQUAL(0x56, x[1]);
+	BOOST_CHECK_EQUAL(0x78, x[2]);
+}
+
+
+
+BOOST_AUTO_TEST_CASE(test_range_inserter)
+{
+	data_t x;
+	data_t y;
+	y << 0x12 << 0x34 << 0x56 << 0x78 << 0x89;
+
+	x << range(y.begin() + 1, y.end() - 1);
 
 	BOOST_REQUIRE_EQUAL(3, x.size());
 
