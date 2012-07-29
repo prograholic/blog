@@ -59,6 +59,11 @@ namespace dio
 		return data;
 	}
 
+	data_t & operator << (data_t & data, const data_t & x)
+	{
+		data.insert(data.end(), x.begin(), x.end());
+	}
+
 
 
 }

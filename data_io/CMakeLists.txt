@@ -10,6 +10,7 @@ set (DataIoSources
 	data_io_common.h
 	data_io_endian.h
 	data_io_inserter.h
+	data_io_slice.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
