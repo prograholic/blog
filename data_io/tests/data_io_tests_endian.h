@@ -1,3 +1,6 @@
+#ifndef DATA_IO_TESTS_ENDIAN_H
+#define DATA_IO_TESTS_ENDIAN_H
+
 #include "data_io_tests.h"
 
 
@@ -55,3 +58,5 @@ BOOST_AUTO_TEST_CASE(test_big_endian_from_int)
 
 BOOST_AUTO_TEST_SUITE_END()
 
+
+#endif /* DATA_IO_TESTS_ENDIAN_H */

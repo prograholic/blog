@@ -29,6 +29,7 @@ namespace dio
 	typedef std::vector<uint8_t> byte_vector_t;
 	typedef byte_vector_t container_t;
 	typedef container_t data_t;
+
 }
 
 
