@@ -4,7 +4,7 @@
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt).
 //
-//  See http://github.com/prograholic/blog/tree/master/data_io for most recent version including documentation.
+//  See http://github.com/prograholic/blog/tree/master/data_io for most recent version.
 
 #ifndef BOOST_DIO_VECTOR_INSERTER_HPP
 #define BOOST_DIO_VECTOR_INSERTER_HPP
