@@ -1,3 +1,11 @@
+
+//  (C) Copyright Alexey Kutumov 2012.
+//  Use, modification and distribution are subject to the Boost Software License,
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt).
+//
+//  See http://github.com/prograholic/blog/tree/master/data_io for most recent version including documentation.
+
 #ifndef BOOST_DIO_VECTOR_INSERTER_HPP
 #define BOOST_DIO_VECTOR_INSERTER_HPP
 
@@ -8,22 +16,61 @@
 namespace boost {
   namespace dio {
 
-
     /**
      * Simply add value to the end of vector.
-     * Function returns reference to holder, so it can be called any times you need:
+     * Function returns reference to holder, so it can be called any times and mixed with other inserters:
      *
      * std::vector<uint8_t> holder;
      * holder << 1 << 2 << 3 << 4;
      * BOOST_ASSERT(4, holder.size());
      */
-    template <typename PodT, typename IntT>
-    std::vector<PodT> & operator <<(std::vector<PodT> & holder, IntT value)
+    template <typename HolderT, typename ValueT>
+    std::vector<HolderT> & operator <<(std::vector<HolderT> & holder, ValueT value)
     {
       holder.push_back(value);
 
       return holder;
     }
+
+
+    /**
+     * Add value to vector according to given endian tag.
+     * Function returns reference to holder, so it can be called many times and mixed with other inserters:
+     *
+     * std::vector<uint8_t> holder;
+     * holder << as<uint16_t>(le, 0x1234) << as<uint16_t>(be, 0x5678);
+     * BOOST_ASSERT(4, holder.size());
+     */
+    template <typename HolderT, typename EndianTagT, typename IntT>
+    std::vector<HolderT> & operator << (
+        std::vector<HolderT> & holder,
+        const detail::endian_inserter<EndianTagT, IntT> & inserter)
+    {
+      inserter.insert(std::back_inserter(holder));
+
+      return holder;
+    }
+
+    /**
+     * Concatenate two vectors and store result in holder;
+     * Function returns reference to holder, so it can be called many times and mixed with other inserters:
+     *
+     * std::vector<uint8_t> holder;
+     * std::vector<int8_t> input;
+     * input.push_back(1);
+     *
+     * holder << input;
+     * BOOST_ASSERT(input.size() == holder.size());
+     */
+    template <typename HolderT, typename InputT>
+    std::vector<HolderT> & operator << (
+        std::vector<HolderT> & holder, const std::vector<InputT> & input)
+    {
+      holder.insert(holder.end(), input.begin(), input.end());
+
+     return holder;
+    }
+
 
   } // namespace dio
 

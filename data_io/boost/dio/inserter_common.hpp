@@ -1,3 +1,12 @@
+
+//  (C) Copyright Alexey Kutumov 2012.
+//  Use, modification and distribution are subject to the Boost Software License,
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt).
+//
+//  See http://github.com/prograholic/blog/tree/master/data_io for most recent version including documentation.
+
+
 #ifndef BOOST_DIO_INSERTER_COMMON_HPP
 #define BOOST_DIO_INSERTER_COMMON_HPP
 
@@ -13,7 +22,7 @@ namespace boost {
        * This type allows to insert numeric values in differen endian.
        * This struct intentionally incomplete. All work must be done in partial specializations (see below).
        */
-      template <typename EndianTagT, typename TypeT>
+      template <typename TypeT, typename EndianTagT>
       struct endian_inserter;
 
 
@@ -25,7 +34,7 @@ namespace boost {
        * Unsafe method does not checks iterator.
        */
       template <typename TypeT>
-      struct endian_inserter<little_endian_tag, TypeT>
+      struct endian_inserter<TypeT, little_endian_tag>
       {
         TypeT mX;
 
@@ -52,7 +61,7 @@ namespace boost {
        * @sa Description of methods in specialisation for little endian
        */
       template <typename TypeT>
-      struct endian_inserter<big_endian_tag, TypeT>
+      struct endian_inserter<TypeT, big_endian_tag>
       {
         TypeT mX;
 
@@ -79,7 +88,7 @@ namespace boost {
        * @sa Description of methods in specialisation for little endian
        */
       template <typename TypeT>
-      struct endian_inserter<native_endian_tag, TypeT>
+      struct endian_inserter<TypeT, native_endian_tag>
       {
         TypeT mX;
 
@@ -105,10 +114,10 @@ namespace boost {
     /**
      * This function constructs needed inserter (dispatched by given EndianTagT).
      */
-    template <typename EndianTagT, typename IntT>
-    detail::endian_inserter<EndianTagT, IntT> as(EndianTagT /* tag */, IntT value)
+    template <typename IntT, typename EndianTagT>
+    detail::endian_inserter<IntT, EndianTagT> as(EndianTagT /* tag */, IntT value)
     {
-      return detail::endian_inserter<EndianTagT, IntT>(value);
+      return detail::endian_inserter<IntT, EndianTagT>(value);
     }
 
 
