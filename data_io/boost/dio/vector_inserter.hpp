@@ -36,19 +36,19 @@ namespace boost {
 
 
     /**
-     * Add value to vector according to given endian tag.
+     * Add value to vector according to given tag.
      * Function returns reference to holder, so it can be called many times and mixed with other inserters:
      *
      * std::vector<uint8_t> holder;
      * holder << as<uint16_t>(le, 0x1234) << as<uint16_t>(be, 0x5678);
      * BOOST_ASSERT(4, holder.size());
      */
-    template <typename HolderT, typename EndianTagT, typename IntT>
+    template <typename HolderT, typename TagT, typename IntT>
     std::vector<HolderT> & operator << (
         std::vector<HolderT> & holder,
-        const detail::endian_inserter<EndianTagT, IntT> & inserter)
+        const detail::inserter<TagT, IntT> & ins)
     {
-      inserter.insert(std::back_inserter(holder));
+      ins.insert(std::back_inserter(holder));
 
       return holder;
     }

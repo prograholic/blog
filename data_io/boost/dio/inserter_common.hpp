@@ -19,11 +19,11 @@ namespace boost {
     namespace detail {
 
       /**
-       * This type allows to insert numeric values in differen endian.
+       * This type allows to insert values in different ways.
        * This struct intentionally incomplete. All work must be done in partial specializations (see below).
        */
-      template <typename TypeT, typename EndianTagT>
-      struct endian_inserter;
+      template <typename TypeT, typename TagT>
+      struct inserter;
 
 
       /**
@@ -34,11 +34,11 @@ namespace boost {
        * Unsafe method does not checks iterator.
        */
       template <typename TypeT>
-      struct endian_inserter<TypeT, little_endian_tag>
+      struct inserter<TypeT, little_endian_tag>
       {
         TypeT mX;
 
-        endian_inserter(TypeT x): mX(x)
+        inserter(TypeT x): mX(x)
         {}
 
         template <typename OutputIteratorT>
@@ -61,11 +61,11 @@ namespace boost {
        * @sa Description of methods in specialisation for little endian
        */
       template <typename TypeT>
-      struct endian_inserter<TypeT, big_endian_tag>
+      struct inserter<TypeT, big_endian_tag>
       {
         TypeT mX;
 
-        endian_inserter(TypeT x): mX(x)
+        inserter(TypeT x): mX(x)
         {}
 
         template <typename OutputIteratorT>
@@ -88,11 +88,11 @@ namespace boost {
        * @sa Description of methods in specialisation for little endian
        */
       template <typename TypeT>
-      struct endian_inserter<TypeT, native_endian_tag>
+      struct inserter<TypeT, native_endian_tag>
       {
         TypeT mX;
 
-        endian_inserter(TypeT x): mX(x)
+        inserter(TypeT x): mX(x)
         {}
 
         template <typename OutputIteratorT>
@@ -108,6 +108,51 @@ namespace boost {
         }
       };
 
+
+
+
+      struct range_tag {};
+
+      template <typename InputIteratorT>
+      struct inserter<InputIteratorT, range_tag>
+      {
+        InputIteratorT mFirst;
+        InputIteratorT mLast;
+
+        inserter(InputIteratorT first, InputIteratorT last)
+          : mFirst(first), mLast(last)
+        {}
+
+
+        template <typename OutputIteratorT>
+        OutputIteratorT insert(OutputIteratorT input) const
+        {
+          for (InputIteratorT it = mFirst; it != mLast; ++it, ++input)
+          {
+            *input = *it;
+          }
+
+          return input;
+        }
+
+
+        template <typename OutputIteratorT>
+        OutputIteratorT insert(OutputIteratorT first, OutputIteratorT last) const
+        {
+          for (InputIteratorT it = mFirst; it != mLast; ++it, ++first)
+          {
+            if (first == last)
+            {
+              BOOST_THROW_EXCEPTION(dio_exception("Range too big to fit into given iterator range"));
+            }
+            *first = *it;
+          }
+
+          return first;
+        }
+
+      };
+
     } // namespace detail
 
 
@@ -115,11 +160,24 @@ namespace boost {
      * This function constructs needed inserter (dispatched by given EndianTagT).
      */
     template <typename IntT, typename EndianTagT>
-    detail::endian_inserter<IntT, EndianTagT> as(EndianTagT /* tag */, IntT value)
+    detail::inserter<IntT, EndianTagT> as(EndianTagT /* tag */, IntT value)
     {
-      return detail::endian_inserter<IntT, EndianTagT>(value);
+      return detail::inserter<IntT, EndianTagT>(value);
     }
 
+
+    /**
+     * Creates range fom two iterators.
+     *
+     * This function is helpful, when you need to insert a range between two iterators.
+     *
+     * @todo See also Boost.Range
+     */
+    template <typename InputIteratorT>
+    detail::inserter<InputIteratorT, detail::range_tag> make_range(InputIteratorT first, InputIteratorT last)
+    {
+      return detail::inserter<InputIteratorT, detail::range_tag>(first, last);
+    }
 
 
   } // namespace dio
