@@ -3,11 +3,32 @@
 
 #include <stdexcept>
 
+#include "data_io_range.h"
+
+
 #include "data_io_endian.h"
 
 
 namespace dio
 {
+
+	template <typename InputIteratorT, typename ExtractorT>
+	iterator_pair<InputIteratorT> & operator >> (iterator_pair<InputIteratorT> & r, const ExtractorT & extractor)
+	{
+		r.first = extractor.extract(r.first, r.last);
+
+		return r;
+	}
+
+	template <typename PodT, typename ExtractorT>
+	iterator_pair<typename std::vector<PodT>::iterator> & operator >> (const std::vector<PodT> & r, const ExtractorT & extractor)
+	{
+		return (range(r.begin(), r.end()) >> extractor);
+	}
+
+
+#if 0
+
 	namespace detail
 	{
 		template <typename TagT, typename TypeT>
@@ -21,12 +42,7 @@ namespace dio
 	}
 
 
-	class dio_exception: public std::runtime_error
-	{
-	public:
-		dio_exception(const std::string & what): std::runtime_error(what)
-		{}
-	};
+
 
 
 	template <typename IntT>
@@ -49,6 +65,8 @@ namespace dio
 
 
 
+
+
 	template <typename IntT>
 	data_t & operator >> (data_t & data, const detail::number_extractor<le_tag, IntT> & x)
 	{
@@ -62,6 +80,8 @@ namespace dio
 
 		return data;
 	}
+
+#endif //0
 
 }
 

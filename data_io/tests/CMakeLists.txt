@@ -9,13 +9,13 @@ endmacro()
 
 
 set(DataIoTestsSources
-	data_io_tests.cpp
-	data_io_tests.h
+	tests_common.cpp
+	tests_common.hpp
 
 
-	data_io_tests_endian.h
-	data_io_tests_inserter.h
-	data_io_tests_extractor.h
+	endian_tests.hpp
+	inserter_common_tests.hpp
+	vector_inserter_tests.hpp
 )
 
 
