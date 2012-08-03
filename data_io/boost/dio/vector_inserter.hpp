@@ -11,6 +11,8 @@
 
 #include <vector>
 
+#include <boost/array.hpp>
+
 #include <boost/dio/inserter_common.hpp>
 
 namespace boost {
@@ -74,7 +76,8 @@ namespace boost {
 
 
     /**
-     * Add array to end of vector;
+     * @brief Adds array to the end of the vector
+     *
      * Function returns reference to holder, so it can be called many times and mixed with other inserters:
      *
      * std::vector<uint8_t> holder;
@@ -89,6 +92,28 @@ namespace boost {
         const InputT (& input) [N])
     {
       holder.insert(holder.end(), input, input + N);
+
+      return holder;
+    }
+
+
+    /**
+     * @brief Adds boost::array to the end of holder
+     *
+     * Function returns reference to holder, so it can be called many times and mixed with other inserters:
+     *
+     * std::vector<uint8_t> holder;
+     * boost::array<int8_t, 8> data = {{0, 1, 2, 3, 4, 5, 6, 7}};
+     *
+     * holder << data;
+     * BOOST_ASSERT(8, holder.size());
+     */
+    template <typename HolderT, typename InputT, size_t N>
+    std::vector<HolderT> & operator << (
+        std::vector<HolderT> & holder,
+        const ::boost::array<InputT, N> & input)
+    {
+      holder.insert(holder.end(), input.begin(), input.end());
 
       return holder;
     }
