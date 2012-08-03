@@ -96,6 +96,31 @@ BOOST_AUTO_TEST_CASE(check_vector_insert)
 }
 
 
+
+BOOST_AUTO_TEST_CASE(check_array_insert)
+{
+  std::vector<uint8_t> holder;
+  char data [8] = {0, 1, 2, 3, 4, 5, 6, 7};
+
+  /// fill input with previously checked operators
+  holder << as<uint16_t>(le, 0x1234);
+
+  holder << data;
+
+  BOOST_REQUIRE_EQUAL(2 + 8, holder.size());
+  BOOST_CHECK_EQUAL(0x34, holder[0]);
+  BOOST_CHECK_EQUAL(0x12, holder[1]);
+  BOOST_CHECK_EQUAL(0, holder[2]);
+  BOOST_CHECK_EQUAL(1, holder[3]);
+  BOOST_CHECK_EQUAL(2, holder[4]);
+  BOOST_CHECK_EQUAL(3, holder[5]);
+  BOOST_CHECK_EQUAL(4, holder[6]);
+  BOOST_CHECK_EQUAL(5, holder[7]);
+  BOOST_CHECK_EQUAL(6, holder[8]);
+  BOOST_CHECK_EQUAL(7, holder[9]);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

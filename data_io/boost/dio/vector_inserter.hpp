@@ -64,11 +64,33 @@ namespace boost {
      */
     template <typename HolderT, typename InputT>
     std::vector<HolderT> & operator << (
-        std::vector<HolderT> & holder, const std::vector<InputT> & input)
+        std::vector<HolderT> & holder,
+        const std::vector<InputT> & input)
     {
       holder.insert(holder.end(), input.begin(), input.end());
 
-     return holder;
+      return holder;
+    }
+
+
+    /**
+     * Add array to end of vector;
+     * Function returns reference to holder, so it can be called many times and mixed with other inserters:
+     *
+     * std::vector<uint8_t> holder;
+     * char data[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+     *
+     * holder << data;
+     * BOOST_ASSERT(8, holder.size());
+     */
+    template <typename HolderT, typename InputT, size_t N>
+    std::vector<HolderT> & operator << (
+        std::vector<HolderT> & holder,
+        const InputT (& input) [N])
+    {
+      holder.insert(holder.end(), input, input + N);
+
+      return holder;
     }
 
 
