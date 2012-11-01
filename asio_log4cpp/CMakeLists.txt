@@ -7,7 +7,7 @@ project (asio_log4cpp)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost COMPONENTS system REQUIRED)
+find_package(Boost COMPONENTS system thread REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 
@@ -27,6 +27,9 @@ set (ProjectSources
 	main.cpp
 
 	common.h
+
+	application.cpp
+	application.h
 
 	server.cpp
 	server.h
