@@ -13,11 +13,11 @@ void connection_manager::put(connection_base_ptr connection)
 {
 	boost::mutex::scoped_lock lockGuard(mPoolMutex);
 
-	mConnectionPool.insert(connection);
+	mConnectionPool[connection.get()] = connection;
 }
 
 
-void connection_manager::release(connection_base_ptr connection)
+void connection_manager::release(connection_base * connection)
 {
 	boost::mutex::scoped_lock lockGuard(mPoolMutex);
 
@@ -29,9 +29,9 @@ void connection_manager::stop()
 {
 	boost::mutex::scoped_lock lockGuard(mPoolMutex);
 
-	BOOST_FOREACH(connection_base_weak_ptr weakConnection, mConnectionPool)
+	BOOST_FOREACH(connection_pool_t::value_type & weakConnection, mConnectionPool)
 	{
-		if (connection_base_ptr connection = weakConnection.lock())
+		if (connection_base_ptr connection = weakConnection.second.lock())
 		{
 			connection->stop();
 		}

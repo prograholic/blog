@@ -1,7 +1,7 @@
 #ifndef CONNECTION_MANAGER_H
 #define CONNECTION_MANAGER_H
 
-#include <set>
+#include <map>
 
 #include <boost/thread/mutex.hpp>
 #include <boost/smart_ptr/enable_shared_from_this.hpp>
@@ -27,13 +27,14 @@ public:
 		put(connection);
 	}
 
-	void release(connection_base_ptr connection);
+	void release(connection_base * connection);
 
 	void stop();
 
 private:
 
-	std::set<connection_base_weak_ptr> mConnectionPool;
+	typedef std::map<connection_base * , connection_base_weak_ptr> connection_pool_t;
+	connection_pool_t mConnectionPool;
 	boost::mutex mPoolMutex;
 
 	void put(connection_base_ptr connection);

@@ -4,7 +4,7 @@
 
 
 
-const size_t connectionCount = 1000;
+const size_t connectionCount = 100;
 
 
 using namespace boost::asio;
@@ -65,6 +65,7 @@ void client::onResolve(const error_code & ec, ip::tcp::resolver::iterator iterat
 	{
 		for (size_t i = 0; i != connectionCount; ++i)
 		{
+			boost::this_thread::sleep(milliseconds(50));
 			startConnect(iterator->endpoint());
 		}
 	}

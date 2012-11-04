@@ -14,6 +14,6 @@ connection_base::~connection_base()
 {
 	if (connection_manager_ptr connectionManager = mConnectionManager.lock())
 	{
-		connectionManager->release(shared_from_this());
+		connectionManager->release(this);
 	}
 }

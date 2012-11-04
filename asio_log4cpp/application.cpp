@@ -48,7 +48,7 @@ log4cpp::Category & application::initLog()
 	std::auto_ptr<log4cpp::OstreamAppender> appender(new log4cpp::OstreamAppender("std::cout", &std::cout));
 	std::auto_ptr<log4cpp::PatternLayout> layout(new log4cpp::PatternLayout);
 
-	layout->setConversionPattern("%p %m %x%n");
+	layout->setConversionPattern("%r %p %m %x%n");
 
 	appender->setLayout(layout.release());
 
