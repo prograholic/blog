@@ -10,6 +10,8 @@ class client_connection : public connection_base
 public:
 	client_connection(connection_manager_ptr connectionManager, socket_ptr connection);
 
+	~client_connection();
+
 
 	virtual void stop();
 

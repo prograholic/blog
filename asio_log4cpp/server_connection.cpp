@@ -17,6 +17,12 @@ server_connection::server_connection(connection_manager_ptr connectionManager, s
 }
 
 
+server_connection::~server_connection()
+{
+	stop();
+}
+
+
 void server_connection::doStart(const std::string & ndc)
 {
 	startWriting(ndc);

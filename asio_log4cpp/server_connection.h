@@ -10,6 +10,8 @@ class server_connection : public connection_base
 public:
 	server_connection(connection_manager_ptr connectionManager, socket_ptr sock, size_t timeout);
 
+	~server_connection();
+
 	virtual void stop();
 
 private:

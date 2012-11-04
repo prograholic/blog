@@ -18,6 +18,12 @@ client_connection::client_connection(connection_manager_ptr connectionManager, s
 }
 
 
+
+client_connection::~client_connection()
+{
+	stop();
+}
+
 void client_connection::doStart(const std::string & ndc)
 {
 	startReading(ndc);
