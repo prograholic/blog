@@ -2,6 +2,8 @@
 
 #include <ctime>
 
+#include "server_connection.h"
+
 using namespace boost::asio;
 using namespace boost::system;
 using namespace boost::posix_time;
@@ -12,10 +14,10 @@ server::server(boost::asio::io_service & io)
 	: mIo(io),
 	  mResolver(io),
 	  mAcceptor(io),
-	  mTimer(io),
 	  mLogger(log4cpp::Category::getInstance("server")),
 	  mRandomGenerator(::time(0)),
-	  mDistribution(consts::lowerBound, consts::upperBound)
+	  mDistribution(consts::lowerBound, consts::upperBound),
+	  mConnectionManager(boost::make_shared<connection_manager>())
 {
 	mLogger.infoStream() << "constructed";
 }
@@ -23,9 +25,9 @@ server::server(boost::asio::io_service & io)
 
 
 
-void server::run(const std::string & addr, const std::string & port)
+void server::run(const std::string & address, const std::string & port)
 {
-	ip::tcp::resolver::query query(addr, port);
+	ip::tcp::resolver::query query(address, port);
 
 	mLogger.infoStream() << "starting asynchronous resolver...";
 
@@ -40,14 +42,15 @@ void server::stop()
 {
 	mResolver.cancel();
 	mAcceptor.cancel();
-	mTimer.cancel();
+
+	mConnectionManager->stop();
 }
 
 
 
 
 
-/////// start* functions (start async ops) ///////
+///////////////////// on* functions (async handlers) /////////////////////
 
 void server::startAccept()
 {
@@ -63,53 +66,6 @@ void server::startAccept()
 }
 
 
-
-
-void server::startWriting(socket_ptr client, message_ptr msg)
-{
-	mLogger.infoStream() << "starting asynchronous write...";
-
-
-	async_write(*client,
-				to_asio_buffer(msg),
-				boost::bind(&server::onWrite,
-							this,
-							placeholders::error,
-							placeholders::bytes_transferred,
-							client,
-							msg));
-}
-
-
-
-
-void server::startWaiting(socket_ptr client, const time_duration & timeout)
-{
-	mLogger.infoStream() << "starting asynchronous timeout " << timeout << " ...";
-
-
-	mTimer.expires_from_now(timeout);
-	mTimer.async_wait(
-				boost::bind(&server::onWait,
-							this,
-							placeholders::error,
-							client));
-}
-
-
-
-void server::startReading(socket_ptr client, message_ptr msg)
-{
-	mLogger.infoStream() << "starting asynchronous read...";
-
-	client->async_read_some(to_asio_buffer(msg),
-							boost::bind(&server::onRead,
-										this,
-										placeholders::error,
-										placeholders::bytes_transferred,
-										client,
-										msg));
-}
 
 
 
@@ -143,62 +99,9 @@ void server::onAccept(const error_code & ec, socket_ptr client)
 	{
 		size_t timeout = mDistribution(mRandomGenerator);
 		mLogger.infoStream() << "timeout generated: " << timeout;
-		startWriting(client, to_message(timeout));
+
+		mConnectionManager->start_and_add<server_connection>(client, timeout);
 	}
 }
 
 
-
-void server::onWrite(const error_code & ec, size_t bytes_transferred, socket_ptr client, message_ptr msg)
-{
-	mLogger.infoStream() << "write status: " << ec << ", "
-							"message: " << ec.message() << ", "
-							"bytes written: " << bytes_transferred;
-
-	if (!ec)
-	{
-		startWaiting(client, boost::posix_time::milliseconds(msg->timeout));
-	}
-}
-
-
-
-
-void server::onWait(const boost::system::error_code & ec, socket_ptr client)
-{
-	mLogger.infoStream() << "timer status: " << ec << ", message: " << ec.message();
-
-	if (!ec)
-	{
-		message_ptr answer = boost::make_shared<message>();
-		startReading(client, answer);
-	}
-}
-
-
-
-
-void server::onRead(const error_code & ec, size_t bytes_transferred, socket_ptr client, message_ptr msg)
-{
-	mLogger.infoStream() << "read status: " << ec << ", message: " << ec.message();
-
-	if (!ec)
-	{
-
-		/// move current position
-		msg->count += bytes_transferred;
-		BOOST_ASSERT(msg->count <= msg->storage.size());
-
-		if ((msg->count > 0) && (msg->storage[msg->count - 1] == 0))
-		{
-			std::string clientAnswer(msg->storage.begin(), msg->storage.begin() + (msg->count - 1));
-
-			mLogger.infoStream() << "answer from client readed: [" << clientAnswer << "]";
-		}
-		else
-		{
-			mLogger.infoStream() << "received partial message, waiting end of message...";
-			startReading(client, msg);
-		}
-	}
-}

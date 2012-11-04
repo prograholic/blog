@@ -1,14 +1,14 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "server.h"
+#include "common.h"
 
 class application : private boost::noncopyable
 {
 public:
-	application();
+	application(runnable_factory & factory);
 
-	int run();
+	int run(const std::string & address, const std::string & port);
 
 private:
 
@@ -16,7 +16,7 @@ private:
 
 	boost::asio::signal_set mSignalSet;
 
-	server mServer;
+	boost::scoped_ptr<runnable> mRunnable;
 
 	log4cpp::Category & mLogger;
 

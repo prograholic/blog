@@ -17,6 +17,8 @@
 #include <log4cpp/Category.hh>
 
 
+#include "runnable.h"
+
 
 namespace consts
 {
@@ -75,7 +77,7 @@ struct message
 	}
 };
 
-typedef boost::shared_ptr<message> message_ptr;
+//typedef boost::shared_ptr<message> message_ptr;
 
 
 
@@ -83,15 +85,15 @@ typedef boost::shared_ptr<message> message_ptr;
 typedef boost::shared_ptr<boost::asio::ip::tcp::socket> socket_ptr;
 
 
-inline boost::asio::mutable_buffers_1 to_asio_buffer(message_ptr msg)
+inline boost::asio::mutable_buffers_1 to_asio_buffer(message & msg)
 {
-	BOOST_ASSERT(msg->count <= msg->storage.size());
+	BOOST_ASSERT(msg.count <= msg.storage.size());
 
-	return boost::asio::buffer(&msg->storage[msg->count], msg->storage.size() - msg->count);
+	return boost::asio::buffer(&msg.storage[msg.count], msg.storage.size() - msg.count);
 }
 
 
-
+/*
 
 inline message_ptr to_message(size_t timeout)
 {
@@ -107,10 +109,6 @@ inline message_ptr to_message(const std::string & msg)
 
 	return res;
 }
-
-
-
-
-
+*/
 
 #endif // COMMON_H

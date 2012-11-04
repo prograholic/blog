@@ -8,24 +8,24 @@
 
 using namespace boost::asio;
 
-application::application()
+application::application(runnable_factory & factory)
 	: mIo(),
 	  mSignalSet(mIo),
-	  mServer(mIo),
-	  mLogger(application::initLog())
+	  mLogger(application::initLog()),
+	  mRunnable(factory.create(mIo))
 {
 	setUpSignals();
 }
 
 
-int application::run()
+int application::run(const std::string & address, const std::string & port)
 {
 	mLogger.infoStream() << "application starting...";
 
 	mIo.reset();
 	boost::thread workerThread(boost::bind(&application::ioServiceRunWrapper, this));
 
-	mServer.run("0.0.0.0", "12345");
+	mRunnable->run(address, port);
 
 	workerThread.join();
 
@@ -37,7 +37,7 @@ void application::stop()
 {
 	mLogger.infoStream() << "application received stop signal...";
 	mIo.stop();
-	mServer.stop();
+	mRunnable->stop();
 }
 
 
