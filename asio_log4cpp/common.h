@@ -28,6 +28,13 @@ namespace consts
 	const int lowerBound = 0;
 
 	const int upperBound = 1000;
+
+
+	const char simpleLayoutPattern [] = "%r %p %m %n";
+	const char ndcLayoutPattern [] = "%r %p %m %x%n";
+
+
+	const size_t connectionCount = 100;
 }
 
 

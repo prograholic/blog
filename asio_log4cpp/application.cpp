@@ -1,6 +1,7 @@
 #include "application.h"
 
 #include <memory>
+#include <stdexcept>
 
 #include <log4cpp/OstreamAppender.hh>
 #include <log4cpp/PatternLayout.hh>
@@ -8,14 +9,38 @@
 
 using namespace boost::asio;
 
-application::application(runnable_factory & factory)
+application::application(const std::string & layoutPattern, runnable_factory & factory)
 	: mIo(),
 	  mSignalSet(mIo),
-	  mLogger(application::initLog()),
+	  mLogger(application::initLog(layoutPattern)),
 	  mRunnable(factory.create(mIo))
 {
 	setUpSignals();
 }
+
+
+
+std::string application::layout(int argc, char * argv [])
+{
+	std::string usageString = std::string("usage: ") + argv[0] + " <layout>\n"
+							  "  <layout> - one of {simple,ndc}";
+	if (argc < 2)
+	{
+		throw std::runtime_error(usageString);
+	}
+
+	if (argv[1] == std::string("simple"))
+	{
+		return consts::simpleLayoutPattern;
+	}
+	if (argv[1] == std::string("ndc"))
+	{
+		return consts::ndcLayoutPattern;
+	}
+
+	throw std::runtime_error(usageString);
+}
+
 
 
 int application::run(const std::string & address, const std::string & port)
@@ -41,14 +66,14 @@ void application::stop()
 }
 
 
-log4cpp::Category & application::initLog()
+log4cpp::Category & application::initLog(const std::string & layoutPattern)
 {
 	log4cpp::Category & root = log4cpp::Category::getRoot();
 
 	std::auto_ptr<log4cpp::OstreamAppender> appender(new log4cpp::OstreamAppender("std::cout", &std::cout));
 	std::auto_ptr<log4cpp::PatternLayout> layout(new log4cpp::PatternLayout);
 
-	layout->setConversionPattern("%r %p %m %x%n");
+	layout->setConversionPattern(layoutPattern);
 
 	appender->setLayout(layout.release());
 

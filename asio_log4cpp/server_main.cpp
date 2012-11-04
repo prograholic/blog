@@ -5,12 +5,12 @@
 #include <iostream>
 
 
-int main()
+int main(int argc, char * argv [])
 {
 	try
 	{
 		template_runnable_factory<server> serverFactory;
-		application app(serverFactory);
+		application app(application::layout(argc, argv), serverFactory);
 
 
 		const std::string address = "0.0.0.0";

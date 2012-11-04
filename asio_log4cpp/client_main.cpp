@@ -5,13 +5,12 @@
 #include <iostream>
 
 
-int main()
+int main(int argc, char * argv [])
 {
 	try
 	{
 		template_runnable_factory<client> clientFactory;
-		application app(clientFactory);
-
+		application app(application::layout(argc, argv), clientFactory);
 
 		const std::string address = "0.0.0.0";
 		const std::string port = "12345";

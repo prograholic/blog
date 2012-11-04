@@ -6,9 +6,12 @@
 class application : private boost::noncopyable
 {
 public:
-	application(runnable_factory & factory);
+	application(const std::string & layoutPattern, runnable_factory & factory);
 
 	int run(const std::string & address, const std::string & port);
+
+
+	static std::string layout(int argc, char * argv []);
 
 private:
 
@@ -24,7 +27,7 @@ private:
 
 	void stop();
 
-	static log4cpp::Category & initLog();
+	static log4cpp::Category & initLog(const std::string & layoutPattern);
 
 	void setUpSignals();
 

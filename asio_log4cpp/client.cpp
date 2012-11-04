@@ -2,11 +2,6 @@
 
 #include "client_connection.h"
 
-
-
-const size_t connectionCount = 100;
-
-
 using namespace boost::asio;
 using namespace boost::system;
 using namespace boost::posix_time;
@@ -63,9 +58,8 @@ void client::onResolve(const error_code & ec, ip::tcp::resolver::iterator iterat
 
 	if (!ec)
 	{
-		for (size_t i = 0; i != connectionCount; ++i)
+		for (size_t i = 0; i != consts::connectionCount; ++i)
 		{
-			//boost::this_thread::sleep(milliseconds(50));
 			startConnect(iterator->endpoint());
 		}
 	}
