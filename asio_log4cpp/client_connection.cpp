@@ -12,16 +12,15 @@ client_connection::client_connection(connection_manager_ptr connectionManager, s
 	  mInputMsg(),
 	  mOutputMsg("GOODBYE"),
 	  mLogger(log4cpp::Category::getInstance("client.connection")),
-	  mTimer(connection->get_io_service()),
-	  mNdc("client_" + boost::lexical_cast<std::string>(connectionManager->nextCounter()))
+	  mTimer(connection->get_io_service())
 {
 
 }
 
 
-void client_connection::start()
+void client_connection::doStart(const std::string & ndc)
 {
-	startReading();
+	startReading(ndc);
 }
 
 
@@ -32,17 +31,17 @@ void client_connection::stop()
 }
 
 
-void client_connection::startReading()
+void client_connection::startReading(const std::string & ndc)
 {
 	mLogger.infoStream() << "starting asynchronous reading...";
 
 	mSocket->async_read_some(to_asio_buffer(mInputMsg),
-							 decorate<NdcDecorator>(
+							 decorate(
 								 boost::bind(&client_connection::onRead,
 											 shared_from(this),
 											 placeholders::error,
 											 placeholders::bytes_transferred),
-								 mNdc));
+								 ndc));
 }
 
 
@@ -53,11 +52,10 @@ void client_connection::startWaiting(const boost::posix_time::time_duration & ti
 
 	mTimer.expires_from_now(timeout);
 	mTimer.async_wait(
-				decorate<NdcDecorator>(
+				decorate(
 					boost::bind(&client_connection::onWait,
 								shared_from(this),
-								placeholders::error),
-					mNdc));
+								placeholders::error)));
 }
 
 
@@ -67,12 +65,11 @@ void client_connection::startWriting()
 
 	async_write(*mSocket,
 				to_asio_buffer(mOutputMsg),
-				decorate<NdcDecorator>(
+				decorate(
 					boost::bind(&client_connection::onWrite,
 								shared_from(this),
 								placeholders::error,
-								placeholders::bytes_transferred),
-					mNdc));
+								placeholders::bytes_transferred)));
 }
 
 
@@ -108,7 +105,7 @@ void client_connection::onRead(const error_code & ec, size_t bytes_transferred)
 		else
 		{
 			mLogger.infoStream() << "received partial message, waiting end of message...";
-			startReading();
+			startReading(log4cpp::NDC::get());
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/smart_ptr/weak_ptr.hpp>
 
+#include "common.h"
 
 
 typedef boost::shared_ptr<class connection_manager> connection_manager_ptr;
@@ -19,7 +20,12 @@ public:
 
 	~connection_base();
 
-	virtual void start() = 0;
+	void start(const std::string & ndc)
+	{
+		NdcHolder ndcHolder(ndc);
+
+		doStart(ndc);
+	}
 
 	virtual void stop() = 0;
 
@@ -32,6 +38,9 @@ public:
 
 private:
 	connection_manager_weak_ptr mConnectionManager;
+
+
+	virtual void doStart(const std::string & ndc) = 0;
 };
 
 

@@ -136,12 +136,26 @@ private:
 };
 
 
-
-
-template <template<typename> class DecoratorT, typename HandlerT, typename ... ArgsT>
-DecoratorT<HandlerT> decorate(HandlerT handler, ArgsT ... args)
+struct NdcHolder : private boost::noncopyable
 {
-	return DecoratorT<HandlerT>(handler, args ...);
+	NdcHolder(const std::string & ndc)
+	{
+		log4cpp::NDC::push(ndc);
+	}
+
+	~NdcHolder()
+	{
+		log4cpp::NDC::pop();
+	}
+
+};
+
+
+
+template <typename HandlerT>
+NdcDecorator<HandlerT> decorate(HandlerT handler, const std::string & ndc = log4cpp::NDC::get())
+{
+	return NdcDecorator<HandlerT>(handler, ndc);
 }
 
 
@@ -150,19 +164,7 @@ DecoratorT<HandlerT> decorate(HandlerT handler, ArgsT ... args)
 template <typename FunctionT, typename HandlerT>
 void asio_handler_invoke(FunctionT func, NdcDecorator<HandlerT> * ndcHandler)
 {
-	struct NdcHolder : private boost::noncopyable
-	{
-		NdcHolder(const std::string & ndc)
-		{
-			log4cpp::NDC::push(ndc);
-		}
 
-		~NdcHolder()
-		{
-			log4cpp::NDC::pop();
-		}
-
-	};
 
 
 	NdcHolder ndcHolder(ndcHandler->ndc());

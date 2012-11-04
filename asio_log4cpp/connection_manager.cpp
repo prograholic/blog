@@ -1,6 +1,7 @@
 #include "connection_manager.h"
 
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 connection_manager::connection_manager()
 	: mConnectionPool(),
@@ -41,9 +42,9 @@ void connection_manager::stop()
 
 
 
-long connection_manager::nextCounter()
+std::string connection_manager::nextCounter()
 {
 	long val = static_cast<long>(++mCount);
 
-	return val;
+	return boost::lexical_cast<std::string>(val);
 }

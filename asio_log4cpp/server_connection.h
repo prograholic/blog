@@ -10,8 +10,6 @@ class server_connection : public connection_base
 public:
 	server_connection(connection_manager_ptr connectionManager, socket_ptr sock, size_t timeout);
 
-	virtual void start();
-
 	virtual void stop();
 
 private:
@@ -26,10 +24,9 @@ private:
 
 	boost::asio::deadline_timer mTimer;
 
-	std::string mNdc;
+	virtual void doStart(const std::string & ndc);
 
-
-	void startWriting();
+	void startWriting(const std::string & ndc);
 
 	void startWaiting(const boost::posix_time::time_duration & timeout);
 

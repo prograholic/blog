@@ -23,7 +23,9 @@ public:
 	{
 		boost::shared_ptr<ConnectionT> connection = boost::make_shared<ConnectionT>(shared_from_this(), args ...);
 
-		connection->start();
+		std::string ndc = "<SID=" + this->nextCounter() + ">";
+
+		connection->start(ndc);
 
 		put(connection);
 	}
@@ -32,7 +34,7 @@ public:
 
 	void stop();
 
-	long nextCounter();
+	std::string nextCounter();
 
 private:
 

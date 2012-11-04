@@ -12,15 +12,14 @@ server_connection::server_connection(connection_manager_ptr connectionManager, s
 	  mInputMsg(),
 	  mOutputMsg(timeout),
 	  mLogger(log4cpp::Category::getInstance("server.connection")),
-	  mTimer(sock->get_io_service()),
-	  mNdc("server_" + boost::lexical_cast<std::string>(connectionManager->nextCounter()))
+	  mTimer(sock->get_io_service())
 {
 }
 
 
-void server_connection::start()
+void server_connection::doStart(const std::string & ndc)
 {
-	startWriting();
+	startWriting(ndc);
 }
 
 void server_connection::stop()
@@ -30,18 +29,18 @@ void server_connection::stop()
 }
 
 
-void server_connection::startWriting()
+void server_connection::startWriting(const std::string & ndc)
 {
 	mLogger.infoStream() << "starting asynchronous write...";
 
 	async_write(*mSocket,
 				to_asio_buffer(mOutputMsg),
-				decorate<NdcDecorator>(
+				decorate(
 					boost::bind(&server_connection::onWrite,
 								shared_from(this),
 								placeholders::error,
 								placeholders::bytes_transferred),
-					mNdc));
+					ndc));
 }
 
 
@@ -51,11 +50,10 @@ void server_connection::startWaiting(const time_duration & timeout)
 
 	mTimer.expires_from_now(timeout);
 	mTimer.async_wait(
-				decorate<NdcDecorator>(
+				decorate(
 					boost::bind(&server_connection::onWait,
 								shared_from(this),
-								placeholders::error),
-					mNdc));
+								placeholders::error)));
 }
 
 
@@ -64,12 +62,11 @@ void server_connection::startReading()
 	mLogger.infoStream() << "starting asynchronous read...";
 
 	mSocket->async_read_some(to_asio_buffer(mInputMsg),
-							 decorate<NdcDecorator>(
+							 decorate(
 								 boost::bind(&server_connection::onRead,
 											 shared_from(this),
 											 placeholders::error,
-											 placeholders::bytes_transferred),
-								 mNdc));
+											 placeholders::bytes_transferred)));
 }
 
 

@@ -11,8 +11,6 @@ public:
 	client_connection(connection_manager_ptr connectionManager, socket_ptr connection);
 
 
-	virtual void start();
-
 	virtual void stop();
 
 
@@ -28,10 +26,13 @@ private:
 
 	boost::asio::deadline_timer mTimer;
 
-	std::string mNdc;
 
 
-	void startReading();
+
+	virtual void doStart(const std::string & ndc);
+
+
+	void startReading(const std::string & ndc);
 
 	void startWaiting(const boost::posix_time::time_duration & timeout);
 
