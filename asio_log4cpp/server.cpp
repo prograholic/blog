@@ -101,6 +101,8 @@ void server::onAccept(const error_code & ec, socket_ptr client)
 		mLogger.infoStream() << "timeout generated: " << timeout;
 
 		mConnectionManager->start_and_add<server_connection>(client, timeout);
+
+		startAccept();
 	}
 }
 
