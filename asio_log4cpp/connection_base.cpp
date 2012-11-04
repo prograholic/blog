@@ -17,3 +17,12 @@ connection_base::~connection_base()
 		connectionManager->release(this);
 	}
 }
+
+
+
+void connection_base::start(const std::string & ndc)
+{
+	NdcHolder ndcHolder(ndc);
+
+	doStart(ndc);
+}

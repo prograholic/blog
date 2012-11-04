@@ -34,8 +34,6 @@ public:
 
 	void stop();
 
-	std::string nextCounter();
-
 private:
 
 	typedef std::map<connection_base * , connection_base_weak_ptr> connection_pool_t;
@@ -46,6 +44,8 @@ private:
 	boost::detail::atomic_count mCount;
 
 	void put(connection_base_ptr connection);
+
+	std::string nextCounter();
 
 };
 

@@ -20,12 +20,7 @@ public:
 
 	~connection_base();
 
-	void start(const std::string & ndc)
-	{
-		NdcHolder ndcHolder(ndc);
-
-		doStart(ndc);
-	}
+	void start(const std::string & ndc);
 
 	virtual void stop() = 0;
 

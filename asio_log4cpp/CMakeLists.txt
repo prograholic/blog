@@ -14,10 +14,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(Threads REQUIRED)
 
-
 find_package(PkgConfig REQUIRED)
-
-
 
 pkg_search_module(LOG4CPP REQUIRED log4cpp-1.0)
 include_directories(${LOG4CPP_INCLUDE_DIRS})
