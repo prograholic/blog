@@ -1,5 +1,7 @@
 #include "server_connection.h"
 
+#include "connection_manager.h"
+
 using namespace boost::asio;
 using namespace boost::system;
 using namespace boost::posix_time;
@@ -10,7 +12,8 @@ server_connection::server_connection(connection_manager_ptr connectionManager, s
 	  mInputMsg(),
 	  mOutputMsg(timeout),
 	  mLogger(log4cpp::Category::getInstance("server.connection")),
-	  mTimer(sock->get_io_service())
+	  mTimer(sock->get_io_service()),
+	  mNdc("server_" + boost::lexical_cast<std::string>(connectionManager->nextCounter()))
 {
 }
 
@@ -33,10 +36,12 @@ void server_connection::startWriting()
 
 	async_write(*mSocket,
 				to_asio_buffer(mOutputMsg),
-				boost::bind(&server_connection::onWrite,
-							shared_from(this),
-							placeholders::error,
-							placeholders::bytes_transferred));
+				decorate<NdcDecorator>(
+					boost::bind(&server_connection::onWrite,
+								shared_from(this),
+								placeholders::error,
+								placeholders::bytes_transferred),
+					mNdc));
 }
 
 
@@ -46,9 +51,11 @@ void server_connection::startWaiting(const time_duration & timeout)
 
 	mTimer.expires_from_now(timeout);
 	mTimer.async_wait(
-				boost::bind(&server_connection::onWait,
-							shared_from(this),
-							placeholders::error));
+				decorate<NdcDecorator>(
+					boost::bind(&server_connection::onWait,
+								shared_from(this),
+								placeholders::error),
+					mNdc));
 }
 
 
@@ -57,10 +64,12 @@ void server_connection::startReading()
 	mLogger.infoStream() << "starting asynchronous read...";
 
 	mSocket->async_read_some(to_asio_buffer(mInputMsg),
-							 boost::bind(&server_connection::onRead,
-										 shared_from(this),
-										 placeholders::error,
-										 placeholders::bytes_transferred));
+							 decorate<NdcDecorator>(
+								 boost::bind(&server_connection::onRead,
+											 shared_from(this),
+											 placeholders::error,
+											 placeholders::bytes_transferred),
+								 mNdc));
 }
 
 

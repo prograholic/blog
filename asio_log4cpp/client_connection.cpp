@@ -1,5 +1,7 @@
 #include "client_connection.h"
 
+#include "connection_manager.h"
+
 using namespace boost::asio;
 using namespace boost::system;
 using namespace boost::posix_time;
@@ -10,7 +12,8 @@ client_connection::client_connection(connection_manager_ptr connectionManager, s
 	  mInputMsg(),
 	  mOutputMsg("GOODBYE"),
 	  mLogger(log4cpp::Category::getInstance("client.connection")),
-	  mTimer(connection->get_io_service())
+	  mTimer(connection->get_io_service()),
+	  mNdc("client_" + boost::lexical_cast<std::string>(connectionManager->nextCounter()))
 {
 
 }
@@ -31,13 +34,15 @@ void client_connection::stop()
 
 void client_connection::startReading()
 {
-	mLogger.infoStream() << "starting asynchronous writing...";
+	mLogger.infoStream() << "starting asynchronous reading...";
 
 	mSocket->async_read_some(to_asio_buffer(mInputMsg),
-							 boost::bind(&client_connection::onRead,
-										 shared_from(this),
-										 placeholders::error,
-										 placeholders::bytes_transferred));
+							 decorate<NdcDecorator>(
+								 boost::bind(&client_connection::onRead,
+											 shared_from(this),
+											 placeholders::error,
+											 placeholders::bytes_transferred),
+								 mNdc));
 }
 
 
@@ -48,9 +53,11 @@ void client_connection::startWaiting(const boost::posix_time::time_duration & ti
 
 	mTimer.expires_from_now(timeout);
 	mTimer.async_wait(
-				boost::bind(&client_connection::onWait,
-							shared_from(this),
-							placeholders::error));
+				decorate<NdcDecorator>(
+					boost::bind(&client_connection::onWait,
+								shared_from(this),
+								placeholders::error),
+					mNdc));
 }
 
 
@@ -60,10 +67,12 @@ void client_connection::startWriting()
 
 	async_write(*mSocket,
 				to_asio_buffer(mOutputMsg),
-				boost::bind(&client_connection::onWrite,
-							shared_from(this),
-							placeholders::error,
-							placeholders::bytes_transferred));
+				decorate<NdcDecorator>(
+					boost::bind(&client_connection::onWrite,
+								shared_from(this),
+								placeholders::error,
+								placeholders::bytes_transferred),
+					mNdc));
 }
 
 

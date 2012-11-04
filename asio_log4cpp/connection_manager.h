@@ -6,6 +6,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/smart_ptr/enable_shared_from_this.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
+#include <boost/smart_ptr/detail/atomic_count.hpp>
 
 #include "connection_base.h"
 
@@ -31,11 +32,16 @@ public:
 
 	void stop();
 
+	long nextCounter();
+
 private:
 
 	typedef std::map<connection_base * , connection_base_weak_ptr> connection_pool_t;
 	connection_pool_t mConnectionPool;
 	boost::mutex mPoolMutex;
+
+
+	boost::detail::atomic_count mCount;
 
 	void put(connection_base_ptr connection);
 

@@ -15,7 +15,7 @@
 
 
 #include <log4cpp/Category.hh>
-
+#include <log4cpp/NDC.hh>
 
 #include "runnable.h"
 
@@ -77,10 +77,6 @@ struct message
 	}
 };
 
-//typedef boost::shared_ptr<message> message_ptr;
-
-
-
 
 typedef boost::shared_ptr<boost::asio::ip::tcp::socket> socket_ptr;
 
@@ -93,22 +89,91 @@ inline boost::asio::mutable_buffers_1 to_asio_buffer(message & msg)
 }
 
 
-/*
 
-inline message_ptr to_message(size_t timeout)
+
+
+template <typename HandlerT>
+class NdcDecorator
 {
-	message_ptr res = boost::make_shared<message>(timeout);
+public:
 
-	return res;
+	explicit NdcDecorator(HandlerT handler, const std::string & ndc)
+	: mHandler(handler),
+	  mNdc(ndc)
+	{
+
+	}
+
+
+	void operator()()
+	{
+		mHandler();
+	}
+
+	template <typename Arg1>
+	void operator() (Arg1 arg1)
+	{
+		mHandler(arg1);
+	}
+
+	template <typename Arg1, typename Arg2>
+	void operator() (Arg1 arg1, Arg2 arg2)
+	{
+		mHandler(arg1, arg2);
+	}
+
+
+	const std::string & ndc() const
+	{
+		return mNdc;
+	}
+
+
+private:
+
+	HandlerT mHandler;
+	std::string mNdc;
+};
+
+
+
+
+template <template<typename> class DecoratorT, typename HandlerT, typename ... ArgsT>
+DecoratorT<HandlerT> decorate(HandlerT handler, ArgsT ... args)
+{
+	return DecoratorT<HandlerT>(handler, args ...);
 }
 
 
-inline message_ptr to_message(const std::string & msg)
-{
-	message_ptr res = boost::make_shared<message>(msg);
 
-	return res;
+
+template <typename FunctionT, typename HandlerT>
+void asio_handler_invoke(FunctionT func, NdcDecorator<HandlerT> * ndcHandler)
+{
+	struct NdcHolder : private boost::noncopyable
+	{
+		NdcHolder(const std::string & ndc)
+		{
+			log4cpp::NDC::push(ndc);
+		}
+
+		~NdcHolder()
+		{
+			log4cpp::NDC::pop();
+		}
+
+	};
+
+
+	NdcHolder ndcHolder(ndcHandler->ndc());
+
+	func();
 }
-*/
+
+
+
+
+
+
 
 #endif // COMMON_H

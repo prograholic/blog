@@ -4,7 +4,8 @@
 
 connection_manager::connection_manager()
 	: mConnectionPool(),
-	  mPoolMutex()
+	  mPoolMutex(),
+	  mCount(0)
 {
 }
 
@@ -36,4 +37,13 @@ void connection_manager::stop()
 			connection->stop();
 		}
 	}
+}
+
+
+
+long connection_manager::nextCounter()
+{
+	long val = static_cast<long>(++mCount);
+
+	return val;
 }

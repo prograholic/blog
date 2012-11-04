@@ -28,6 +28,8 @@ private:
 
 	boost::asio::deadline_timer mTimer;
 
+	std::string mNdc;
+
 
 	void startReading();
 
