@@ -4,35 +4,38 @@
 
 
 
+template <typename UnusedType>
+class function;
+
 
 
 
 template <typename ReturnType, typename ... ArgumentTypes>
-class typed_function
+class function <ReturnType (ArgumentTypes ...)>
 {
 public:
 
 
-	typed_function()
+	function()
 		: mInvoker()
 	{}
 
 
 	template <typename FunctionT>
-	typed_function(FunctionT f)
+	function(FunctionT f)
 		: mInvoker(new templated_function_holder<FunctionT>(f))
 	{
 
 	}
 
 
-	typed_function(const typed_function & other)
+	function(const function & other)
 		: mInvoker(other.mInvoker->clone())
 	{
 
 	}
 
-	typed_function & operator = (const typed_function & other)
+	function & operator = (const function & other)
 	{
 		mInvoker = other.mInvoker->clone();
 	}
@@ -96,7 +99,6 @@ private:
 			return invoker_t(new self_type(mFunction));
 		}
 
-
 	private:
 
 		FunctionT mFunction;
@@ -105,33 +107,22 @@ private:
 	invoker_t mInvoker;
 };
 
-
-
-
-
 int func1()
 {
 	return 0;
 }
-
-
 
 int func2(const char * x, int y)
 {
 	return (*x) + y;
 }
 
-
-
-
 using std::cout;
 using std::endl;
 
-
-
 void check1()
 {
-	typedef typed_function<int> int_function_t;
+	typedef function<int (void)> int_function_t;
 	int_function_t f1(func1);
 
 	cout << "calling function with signature int (void):                           " <<  f1() << std::endl;
@@ -151,11 +142,10 @@ void check1()
 
 void check2()
 {
-	typedef typed_function<int, const char * , int> int_function_with_two_args_t;
+	typedef function<int (const char * , int)> int_function_with_two_args_t;
 	int_function_with_two_args_t f2(func2);
 
 	char x = 10;
-
 	cout << "calling function with signature int (const char * , int):             " <<  f2(&x, 20) << std::endl;
 }
 
@@ -163,6 +153,11 @@ int main()
 {
 	check1();
 	check2();
+
+
+
+
+
 
 	return 0;
 }
