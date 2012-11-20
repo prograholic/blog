@@ -5,19 +5,6 @@
 #include <functional>
 
 
-
-namespace detail
-{
-	template <typename FirstType, typename ... RestTypes>
-	struct first_
-	{
-		typedef FirstType type;
-	};
-}
-
-
-
-
 template <typename UnusedType>
 class function;
 
@@ -128,7 +115,6 @@ private:
 	{
 	public:
 
-
 		typedef FunctionType ClassType::* member_function_signature_t;
 
 		member_function_holder(member_function_signature_t f)
@@ -203,11 +189,6 @@ struct Foo
 		return x + 1;
 	}
 };
-
-
-
-
-
 
 
 void check3()
