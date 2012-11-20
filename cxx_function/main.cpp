@@ -1,6 +1,20 @@
 #include <iostream>
-
 #include <memory>
+
+
+#include <functional>
+
+
+
+namespace detail
+{
+	template <typename FirstType, typename ... RestTypes>
+	struct first_
+	{
+		typedef FirstType type;
+	};
+}
+
 
 
 
@@ -15,6 +29,7 @@ class function <ReturnType (ArgumentTypes ...)>
 {
 public:
 
+	typedef ReturnType signature_type (ArgumentTypes ...);
 
 	function()
 		: mInvoker()
@@ -23,10 +38,15 @@ public:
 
 	template <typename FunctionT>
 	function(FunctionT f)
-		: mInvoker(new templated_function_holder<FunctionT>(f))
+		: mInvoker(new free_function_holder<FunctionT>(f))
 	{
 
 	}
+
+	template <typename FunctionType, typename ClassType>
+	function(FunctionType ClassType::* f)
+		: mInvoker(new member_function_holder<FunctionType, ArgumentTypes ...>(f))
+	{}
 
 
 	function(const function & other)
@@ -75,18 +95,16 @@ private:
 
 
 	template <typename FunctionT>
-	class templated_function_holder : public function_holder_base
+	class free_function_holder : public function_holder_base
 	{
 	public:
 
-		templated_function_holder(FunctionT func)
+		free_function_holder(FunctionT func)
 			: function_holder_base(),
 			  mFunction(func)
 		{
 
 		}
-
-		typedef templated_function_holder<FunctionT> self_type;
 
 		virtual ReturnType invoke(ArgumentTypes ... args)
 		{
@@ -96,7 +114,7 @@ private:
 
 		virtual invoker_t clone()
 		{
-			return invoker_t(new self_type(mFunction));
+			return invoker_t(new free_function_holder(mFunction));
 		}
 
 	private:
@@ -104,15 +122,43 @@ private:
 		FunctionT mFunction;
 	};
 
+
+	template <typename FunctionType, typename ClassType, typename ... RestArgumentTypes>
+	class member_function_holder : public function_holder_base
+	{
+	public:
+
+
+		typedef FunctionType ClassType::* member_function_signature_t;
+
+		member_function_holder(member_function_signature_t f)
+			: mFunction(f)
+		{}
+
+		virtual ReturnType invoke(ClassType obj, RestArgumentTypes ... restArgs)
+		{
+			return (obj.*mFunction)(restArgs ...);
+		}
+
+		virtual invoker_t clone()
+		{
+			return invoker_t(new member_function_holder(mFunction));
+		}
+
+	private:
+		member_function_signature_t mFunction;
+	};
+
 	invoker_t mInvoker;
 };
+
 
 int func1()
 {
 	return 0;
 }
 
-int func2(const char * x, int y)
+int func2(const int * x, int y)
 {
 	return (*x) + y;
 }
@@ -122,42 +168,66 @@ using std::endl;
 
 void check1()
 {
-	typedef function<int (void)> int_function_t;
-	int_function_t f1(func1);
+	typedef function<int (const int * , int)> int_function_with_two_args_t;
+	int_function_with_two_args_t f2(func2);
 
-	cout << "calling function with signature int (void):                           " <<  f1() << std::endl;
-
-	int_function_t f2;
-
-
-	f2 = f1;
-	cout << "calling function after assignment operator with signature int (void): " <<  f2() << std::endl;
-
-
-	int_function_t f3(f2);
-	cout << "calling function after copying ctor with signature int (void):        " <<  f3() << std::endl;
+	int x = 10;
+	cout << "calling function with signature int (const int * , int):              " <<  f2(&x, 20) << endl;
 }
 
 
 
 void check2()
 {
-	typedef function<int (const char * , int)> int_function_with_two_args_t;
-	int_function_with_two_args_t f2(func2);
+	typedef function<int (void)> int_function_t;
+	int_function_t f1(func1);
 
-	char x = 10;
-	cout << "calling function with signature int (const char * , int):             " <<  f2(&x, 20) << std::endl;
+	cout << "calling function with signature int (void):                           " <<  f1() << endl;
+
+	int_function_t f2;
+
+
+	f2 = f1;
+	cout << "calling function after assignment operator with signature int (void): " <<  f2() << endl;
+
+
+	int_function_t f3(f2);
+	cout << "calling function after copying ctor with signature int (void):        " <<  f3() << endl;
 }
+
+
+struct Foo
+{
+	int smth(int x)
+	{
+		return x + 1;
+	}
+};
+
+
+
+
+
+
+
+void check3()
+{
+	typedef function<int (Foo, int)> member_function_t;
+
+	member_function_t f1 = &Foo::smth;
+
+
+	Foo foo;
+	cout << "calling member function with signature int (int):                     " <<  f1(foo, 5) << endl;
+}
+
+
 
 int main()
 {
 	check1();
 	check2();
-
-
-
-
-
+	check3();
 
 	return 0;
 }
