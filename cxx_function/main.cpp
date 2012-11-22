@@ -20,26 +20,29 @@ public:
 
 	function()
 		: mInvoker()
-	{}
+	{
+	}
 
 
 	template <typename FunctionT>
+
+	/// Uncomment this, and add corresponding assignment operator for `check4`
+	///explicit
 	function(FunctionT f)
 		: mInvoker(new free_function_holder<FunctionT>(f))
 	{
-
 	}
 
 	template <typename FunctionType, typename ClassType>
 	function(FunctionType ClassType::* f)
 		: mInvoker(new member_function_holder<FunctionType, ArgumentTypes ...>(f))
-	{}
+	{
+	}
 
 
 	function(const function & other)
 		: mInvoker(other.mInvoker->clone())
 	{
-
 	}
 
 	function & operator = (const function & other)
@@ -204,11 +207,37 @@ void check3()
 
 
 
+
+
+struct Bar
+{
+	int callMe(int x)
+	{
+		return x * 2;
+	}
+};
+
+
+void check4()
+{
+	typedef function<int (void)> int_function_t;
+
+	int_function_t f1;
+
+	Bar bar;
+
+	f1 = std::bind(&Bar::callMe, bar, 10);
+	cout << "calling binded member function with signature int (void):             " <<  f1() << endl;
+}
+
+
+
 int main()
 {
 	check1();
 	check2();
 	check3();
+	check4();
 
 	return 0;
 }
