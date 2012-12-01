@@ -1,11 +1,7 @@
 #include <exception>
-
 #include <iostream>
 
-
 using namespace std;
-
-
 
 struct some_exception {
 	explicit some_exception(int x): v(x) {
