@@ -48,7 +48,7 @@ void exceptionHandler(const our_exception & e, bool catchNested) {
 	cerr << endl;
 }
 
-void nestedExceptionSample() {
+void exceptionProcessing() {
 	try {
 		ourWorker();
 	} catch (const our_exception & e) {
@@ -60,4 +60,34 @@ void nestedExceptionSample() {
 	} catch (const our_exception & e) {
 		exceptionHandler(e, true);
 	}
+}
+
+
+
+
+void processNestedException() {
+	try {
+		throw 10;
+	} catch (...) {
+		try {
+			throw nested_exception();
+		} catch (const nested_exception & e) {
+			exception_ptr nested = e.nested_ptr();
+		}
+
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+void nestedExceptionSample() {
+	exceptionProcessing();
 }
