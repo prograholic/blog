@@ -19,6 +19,9 @@ set (CxxExceptionSources
 
 	nested_exception_sample.cpp
 	nested_exception_sample.h
+
+	noexcept_sample.cpp
+	noexcept_sample.h
 )
 
 add_executable(cxx_exceptions ${CxxExceptionSources})
