@@ -1,58 +1,56 @@
 #include <exception>
 #include <iostream>
 
-using namespace std;
-
 struct some_exception {
 	explicit some_exception(int x): v(x) {
-		cout << " int ctor" << endl;
+		std::cout << " int ctor" << std::endl;
 	}
 
 	some_exception(const some_exception & e): v(e.v) {
-		cout << " copy ctor" << endl;
+		std::cout << " copy ctor" << std::endl;
 	}
 
 	int v;
 };
 
-exception_ptr throwExceptionAndCaptureExceptionPtr() {
-	exception_ptr currentException;
+std::exception_ptr throwExceptionAndCaptureExceptionPtr() {
+	std::exception_ptr currentException;
 	try {
 		const int throwValue = 10;
-		cout << "throwing           " << throwValue << "..." << endl;
+		std::cout << "throwing           " << throwValue << "..." << std::endl;
 		throw some_exception(throwValue);
 
 	} catch (...) {
-		 currentException = current_exception();
+		 currentException = std::current_exception();
 	}
 
 	return currentException;
 }
 
-void rethrowException(exception_ptr ePtr) {
+void rethrowException(std::exception_ptr ePtr) {
 	try {
 		if (ePtr) {
-			rethrow_exception(ePtr);
+			std::rethrow_exception(ePtr);
 		}
 
 	} catch (const some_exception & e) {
-		cout << "catched int value: " << e.v << endl;
+		std::cout << "catched int value: " << e.v << std::endl;
 	}
 
-	exception_ptr anotherExceptionPtr = ePtr;
+	std::exception_ptr anotherExceptionPtr = ePtr;
 	try {
 		if (anotherExceptionPtr) {
-			rethrow_exception(anotherExceptionPtr);
+			std::rethrow_exception(anotherExceptionPtr);
 		}
 
 	} catch (const some_exception & e) {
-		cout << "catched int value: " << e.v << endl;
+		std::cout << "catched int value: " << e.v << std::endl;
 	}
 }
 
 void checkMakeExceptionPtr() {
-	exception_ptr currentException = make_exception_ptr(some_exception(20));
-	cout << "exception_ptr constructed" << endl;
+	std::exception_ptr currentException = std::make_exception_ptr(some_exception(20));
+	std::cout << "exception_ptr constructed" << std::endl;
 
 	rethrowException(currentException);
 }

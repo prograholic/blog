@@ -4,27 +4,24 @@
 #include <future>
 #include <iostream>
 
-
-using namespace std;
-
-void worker(promise<void> & p) {
+void worker(std::promise<void> & p) {
 	try {
-		throw runtime_error("exception from thread");
+		throw std::runtime_error("exception from thread");
 	} catch (...) {
-		p.set_exception(current_exception());
+		p.set_exception(std::current_exception());
 	}
 }
 
 void checkThreadAndException() {
-	promise<void> p;
+	std::promise<void> p;
 	auto result = p.get_future();
 
-	thread t(worker, ref(p));
+	std::thread t(worker, ref(p));
 	t.detach();
 
 	try {
 		result.get();
-	} catch (const runtime_error & e) {
-		cout << "runtime error catched from async worker" << endl;
+	} catch (const std::runtime_error & e) {
+		std::cout << "runtime error catched from async worker" << std::endl;
 	}
 }

@@ -5,9 +5,6 @@
 
 #include <iostream>
 
-
-using namespace std;
-
 struct third_party_exception {
 	explicit third_party_exception(int e) : code(e) {
 	}
@@ -20,9 +17,9 @@ void third_party_worker() {
 	throw third_party_exception(100);
 }
 
-class our_exception : public runtime_error {
+class our_exception : public std::runtime_error {
 public:
-	our_exception(const string & e) : runtime_error("our error: " + e) {
+	our_exception(const std::string & e) : std::runtime_error("our error: " + e) {
 	}
 };
 
@@ -35,17 +32,17 @@ void ourWorker() {
 }
 
 void exceptionHandler(const our_exception & e, bool catchNested) {
-	cerr << "our exception catched: " << e.what();
+	std::cerr << "our exception catched: " << e.what();
 
 	if (catchNested) {
 		try {
 			rethrow_if_nested(e);
 		} catch (const third_party_exception & e) {
-			cerr << ", low level reason is: " << e.code;
+			std::cerr << ", low level reason is: " << e.code;
 		}
 	}
 
-	cerr << endl;
+	std::cerr << std::endl;
 }
 
 void exceptionProcessing() {
@@ -70,9 +67,9 @@ void processNestedException() {
 		throw 10;
 	} catch (...) {
 		try {
-			throw nested_exception();
-		} catch (const nested_exception & e) {
-			exception_ptr nested = e.nested_ptr();
+			throw std::nested_exception();
+		} catch (const std::nested_exception & e) {
+			std::exception_ptr nested = e.nested_ptr();
 		}
 
 	}

@@ -3,25 +3,18 @@
 #include <vector>
 #include <iostream>
 
-using namespace std;
-
-
-
-
 template <typename InputTypeT>
 void func() noexcept(noexcept(InputTypeT())) {
 	InputTypeT var;
 	/// do smth with var
-	cout << "func called, object size: " << sizeof(var) << endl;
+	std::cout << "func called, object size: " << sizeof(var) << std::endl;
 }
 
-
-
 void noexceptSample() {
-	cout << "noexcept int():         " << noexcept(int()) << endl;
-	cout << "noexcept vector<int>(): " << noexcept(vector<int>()) << endl << endl;
+	std::cout << "noexcept int():         " << noexcept(int()) << std::endl;
+	std::cout << "noexcept vector<int>(): " << noexcept(std::vector<int>()) << std::endl << std::endl;
 
 	/// @note function is not actually called
-	cout << "noexcept func<int>:         " << noexcept(func<int>()) << endl;
-	cout << "noexcept func<vector<int>>: " << noexcept(func<vector<int>>()) << endl;
+	std::cout << "noexcept func<int>:         " << noexcept(func<int>()) << std::endl;
+	std::cout << "noexcept func<vector<int>>: " << noexcept(func<std::vector<int>>()) << std::endl;
 }
